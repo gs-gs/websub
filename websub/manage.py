@@ -9,6 +9,7 @@ manager = Manager(app)
 
 manager.add_command("runserver", Server())
 manager.add_command('run-callbacks-delivery-processor', commands.RunCallbacksDeliveryProcessor())
+manager.add_command('run-callbacks-spreader-processor', commands.RunCallbacksSpreaderProcessor())
 
 
 def main():
