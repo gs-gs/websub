@@ -16,14 +16,14 @@ def create_app(config_object=None):
     app.register_blueprint(views.blueprint)
 
     def inject_config(binder):
-        SubscriptionRepo = import_string(app.config['SUBSCRIPTION_REPO_CLASS'])
-        binder.bind('SubscriptionRepo', SubscriptionRepo(app.config['SUBSCRIPTION_REPO_CONF']))
+        SubscriptionsRepo = import_string(app.config['SUBSCRIPTIONS_REPO_CLASS'])
+        binder.bind('SubscriptionsRepo', SubscriptionsRepo(app.config['SUBSCRIPTIONS_REPO_CONF']))
 
         DeliveryOutboxRepo = import_string(app.config['DELIVERY_OUTBOX_REPO_CLASS'])
         binder.bind('DeliveryOutboxRepo', DeliveryOutboxRepo(app.config['DELIVERY_OUTBOX_REPO_CONF']))
 
-        NotificationRepo = import_string(app.config['NOTIFICATION_REPO_CLASS'])
-        binder.bind('NotificationRepo', NotificationRepo(app.config['NOTIFICATION_REPO_CONF']))
+        NotificationsRepo = import_string(app.config['NOTIFICATIONS_REPO_CLASS'])
+        binder.bind('NotificationsRepo', NotificationsRepo(app.config['NOTIFICATIONS_REPO_CONF']))
 
     inject.configure(inject_config)
 

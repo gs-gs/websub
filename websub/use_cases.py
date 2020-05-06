@@ -18,7 +18,7 @@ class SubscriptionRegisterUseCase:
     saves url, predicate(pattern), expiration to the storage.
     """
 
-    subscriptions = inject.attr('SubscriptionRepo')
+    subscriptions = inject.attr('SubscriptionsRepo')
 
     def execute(self, url, pattern, expiration):
         # this operation deletes all previous subscription for given url and pattern
@@ -36,7 +36,7 @@ class SubscriptionDeregisterUseCase:
     on user's request removes the subscription to given url for given pattern
     """
 
-    subscriptions = inject.attr('SubscriptionRepo')
+    subscriptions = inject.attr('SubscriptionsRepo')
 
     def execute(self, url, pattern):
         return self.subscriptions.delete(url, pattern) > 0
@@ -63,9 +63,9 @@ class DispatchMessageToSubscribersUseCase:
     the subscription signature
     is based on the message predicate.
     """
-    subscriptions = inject.attr('SubscriptionRepo')
+    subscriptions = inject.attr('SubscriptionsRepo')
     delivery_outbox = inject.attr('DeliveryOutboxRepo')
-    notifications = inject.attr('NotificationRepo')
+    notifications = inject.attr('NotificationsRepo')
 
     def execute(self):
         fetched_publish = self.notifications.get_job()

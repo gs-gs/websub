@@ -6,12 +6,12 @@ from websub.common.conf_helpers import env_s3_config, env_queue_config
 class BaseConfig(metaclass=MetaFlaskEnv):
     DEBUG = False
     TESTING = False
-    SUBSCRIPTION_REPO_CONF = env_s3_config('SUBSCRIPTION_REPO')
-    SUBSCRIPTION_REPO_CLASS = 'intergov.repos.subscriptions.SubscriptionsRepo'
+    SUBSCRIPTIONS_REPO_CONF = env_s3_config('SUBSCRIPTIONS_REPO')
+    SUBSCRIPTIONS_REPO_CLASS = 'intergov.repos.subscriptions.SubscriptionsRepo'
     DELIVERY_OUTBOX_REPO_CLASS = 'intergov.repos.delivery_outbox.DeliveryOutboxRepo'
     DELIVERY_OUTBOX_REPO_CONF = env_queue_config('PROC_DELIVERY_OUTBOX_REPO')
-    NOTIFICATION_REPO_CLASS = env_queue_config('intergov.repos.notifications.NotificationsRepo')
-    NOTIFICATION_REPO_CONF = env_queue_config('NOTIFICATION_REPO_CONF')
+    NOTIFICATIONS_REPO_CLASS = env_queue_config('intergov.repos.notifications.NotificationsRepo')
+    NOTIFICATIONS_REPO_CONF = env_queue_config('NOTIFICATIONS_REPO_CONF')
 
 
 class ProductionConfig(BaseConfig):
