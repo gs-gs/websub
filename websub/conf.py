@@ -27,3 +27,9 @@ class DevelopmentConfig(BaseConfig):
 class TestingConfig(BaseConfig):
     DEBUG = True
     TESTING = True
+    SUBSCRIPTIONS_REPO_CLASS = 'unittest.mock.Mock'
+    SUBSCRIPTIONS_REPO_CONF = {}
+    DELIVERY_OUTBOX_REPO_CLASS = 'unittest.mock.Mock'
+    DELIVERY_OUTBOX_REPO_CONF = {}
+    NOTIFICATIONS_REPO_CLASS = 'unittest.mock.Mock'
+    NOTIFICATIONS_REPO_CONF = {}

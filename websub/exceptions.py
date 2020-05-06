@@ -46,7 +46,7 @@ class LeaseSecondsValidationError(ValidationError):
 
 class UnknownModeError(ValidationError):
     @property
-    def description(self):
+    def detail(self):
         got, = self.args
         return 'Uknown "{}" attribute value: "{}". Accepted:{}.'.format(
             constants.MODE_ATTR_KEY,

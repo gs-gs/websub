@@ -31,6 +31,7 @@ setuptools.setup(
         "inject==4.1.2",
     ],
     tests_require=[
-        "pytests==5.4.1",
+        "pytest==5.4.1",
+        "pytest-flask==1.0.0",
     ]
 )

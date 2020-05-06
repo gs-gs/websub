@@ -161,7 +161,7 @@ def env_s3_config(prefix):
     config = {
         'use_ssl': env_bool(
             f'IGL_{prefix}_USE_SSL',
-            default=env('IGL_DEFAULT_S3_USE_SSL')
+            default=env('IGL_DEFAULT_S3_USE_SSL', False)
         ),
         'host': env(
             f'IGL_{prefix}_HOST',
@@ -203,7 +203,7 @@ def env_queue_config(prefix):
     config = {
         'use_ssl': env_bool(
             f'IGL_{prefix}_USE_SSL',
-            default=env('IGL_DEFAULT_SQS_USE_SSL')
+            default=env('IGL_DEFAULT_SQS_USE_SSL', False)
         ),
         'host': env(
             f'IGL_{prefix}_HOST',
@@ -216,7 +216,7 @@ def env_queue_config(prefix):
         'queue_name': env(
             # None means "repo handles the default queue name"
             f'IGL_{prefix}_QNAME',
-            default=env('IGL_DEFAULT_SQS_QNAME', default=None)
+            default=env('IGL_DEFAULT_SQS_QNAME')
         ),
         'region': env(
             f'IGL_{prefix}_REGION',

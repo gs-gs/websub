@@ -6,8 +6,8 @@ from flask_negotiate import consumes
 
 from websub.common import errors
 from websub.exceptions import (
-    UnknownModeError, CallbackURLValidationError, LeaseSecondsValidationError, TopicValidationError
-)
+    UnknownModeError, CallbackURLValidationError, LeaseSecondsValidationError, TopicValidationError,
+    UnableToPostSubscriptionError, SubscriptionExistsError, SubscriptionNotFoundError)
 from websub.use_cases import SubscriptionDeregisterUseCase, SubscriptionRegisterUseCase
 from .constants import (
     TOPIC_ATTR_KEY,
@@ -23,19 +23,6 @@ from .constants import (
     SUPPORTED_CALLBACK_URL_SCHEMES,
     ATTRS_DEFAULTS
 )
-
-
-class SubscriptionNotFoundError(Exception):
-    pass
-
-
-class UnableToPostSubscriptionError(Exception):
-    pass
-
-
-class SubscriptionExistsError(Exception):
-    pass
-
 
 blueprint = Blueprint('subscriptions', __name__)
 

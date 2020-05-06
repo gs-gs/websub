@@ -2,6 +2,7 @@ import inject
 from flask import Flask
 
 from werkzeug.utils import import_string
+from websub.common.errors import handlers
 
 from .conf import BaseConfig
 from . import views
@@ -26,5 +27,5 @@ def create_app(config_object=None):
         binder.bind('NotificationsRepo', NotificationsRepo(app.config['NOTIFICATIONS_REPO_CONF']))
 
     inject.configure(inject_config)
-
+    handlers.register(app)
     return app
