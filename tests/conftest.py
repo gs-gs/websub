@@ -19,3 +19,11 @@ def subscription_repo():
     yield repo
     inject.clear()
 
+
+@pytest.yield_fixture(scope='module')
+def notification_repo():
+    repo = mock.Mock()
+
+    inject.clear_and_configure(lambda binder: binder.bind('NotificationRepo', repo))
+    yield repo
+    inject.clear()

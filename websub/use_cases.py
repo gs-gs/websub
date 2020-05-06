@@ -63,13 +63,9 @@ class DispatchMessageToSubscribersUseCase:
     the subscription signature
     is based on the message predicate.
     """
-
-    def __init__(
-            self, notifications_repo,
-            delivery_outbox_repo, subscriptions_repo):
-        self.notifications = notifications_repo
-        self.delivery_outbox = delivery_outbox_repo
-        self.subscriptions = subscriptions_repo
+    subscriptions = inject.attr('SubscriptionRepo')
+    delivery_outbox = inject.attr('DeliveryOutboxRepo')
+    notifications = inject.attr('NotificationRepo')
 
     def execute(self):
         fetched_publish = self.notifications.get_job()

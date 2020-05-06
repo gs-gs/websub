@@ -10,6 +10,8 @@ class BaseConfig(metaclass=MetaFlaskEnv):
     SUBSCRIPTION_REPO_CLASS = 'intergov.repos.subscriptions.SubscriptionsRepo'
     DELIVERY_OUTBOX_REPO_CLASS = 'intergov.repos.delivery_outbox.DeliveryOutboxRepo'
     DELIVERY_OUTBOX_REPO_CONF = env_queue_config('PROC_DELIVERY_OUTBOX_REPO')
+    NOTIFICATION_REPO_CLASS = env_queue_config('intergov.repos.notifications.NotificationsRepo')
+    NOTIFICATION_REPO_CONF = env_queue_config('NOTIFICATION_REPO_CONF')
 
 
 class ProductionConfig(BaseConfig):

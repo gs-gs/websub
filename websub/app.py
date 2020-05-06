@@ -22,6 +22,9 @@ def create_app(config_object=None):
         DeliveryOutboxRepo = import_string(app.config['DELIVERY_OUTBOX_REPO_CLASS'])
         binder.bind('DeliveryOutboxRepo', DeliveryOutboxRepo(app.config['DELIVERY_OUTBOX_REPO_CONF']))
 
+        NotificationRepo = import_string(app.config['NOTIFICATION_REPO_CLASS'])
+        binder.bind('NotificationRepo', NotificationRepo(app.config['NOTIFICATION_REPO_CONF']))
+
     inject.configure(inject_config)
 
     return app
