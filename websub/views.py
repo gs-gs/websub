@@ -3,8 +3,8 @@ from urllib.parse import urlparse
 
 from flask import Blueprint, request, Response
 from flask_negotiate import consumes
+from libtrustbridge import errors
 
-from websub.common import errors
 from websub.exceptions import (
     UnknownModeError, CallbackURLValidationError, LeaseSecondsValidationError, TopicValidationError,
     UnableToPostSubscriptionError, SubscriptionExistsError, SubscriptionNotFoundError)

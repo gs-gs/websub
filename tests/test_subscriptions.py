@@ -1,8 +1,8 @@
 import copy
 from http import HTTPStatus as StatusCode
 
-from websub.common import errors
-from websub.common.errors.handlers import error_response_json_template
+from libtrustbridge import errors
+from libtrustbridge.errors.handlers import error_response_json_template
 
 from websub.views import (
     UnknownModeError,

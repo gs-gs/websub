@@ -29,6 +29,7 @@ setuptools.setup(
         "Flask-Script==2.0.6",
         "requests==2.23.0",
         "inject==4.1.2",
+        "libtrustbridge @ git+https://github.com/trustbridge/libtrustbridge@8acedba8",
     ],
     tests_require=[
         "pytest==5.4.1",

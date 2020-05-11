@@ -2,7 +2,7 @@ import inject
 from flask import Flask
 
 from werkzeug.utils import import_string
-from websub.common.errors import handlers
+from libtrustbridge.errors import handlers
 
 from .conf import BaseConfig
 from . import views
