@@ -91,7 +91,7 @@ class SubscriptionsRepoTest(TestCase):
 
         assert kwargs['Bucket'] == 'subscriptions'
         assert kwargs['ContentLength'] == 41
-        assert kwargs['Key'] == 'some_ref'
+        assert kwargs['Key'] == 'some_ref/ff0d1111f6636c354cf92c7137f1b5e6'
         assert kwargs['Body'].read() == b'{"c": "http://callback.url/1", "e": null}'
 
     def test_subscribe_by_pattern__should_put_object_into_repo(self):
@@ -110,20 +110,23 @@ class SubscriptionsRepoTest(TestCase):
     def test_get_subscription_by_id__should_return_subscriptions(self):
         repo = SubscriptionsRepo(connection_data=self.connection_data)
         self.client.list_objects.return_value = {
-            'Contents': [{'Key': 'some_ref'}]
+            'Contents': [{'Key': 'some_ref/ff0d1111f6636c354cf92c7137f1b5e6'}]
         }
         self.client.get_object.return_value = {
             'Body': BytesIO(b'{"c": "http://callback.url/1", "e": null}'),
             'Bucket': 'subscriptions',
             'ContentLength': 39,
-            'Key': 'some_ref',
+            'Key': 'some_ref/ff0d1111f6636c354cf92c7137f1b5e6',
         }
 
         subscriptions = repo.get_subscriptions_by_id(Id('some_ref'))
 
         assert list(subscriptions)[0].callback_url == 'http://callback.url/1'
         self.client.list_objects.assert_called_once_with(Bucket='subscriptions', Prefix='some_ref')
-        self.client.get_object.assert_called_once_with(Bucket='subscriptions', Key='some_ref')
+        self.client.get_object.assert_called_once_with(
+            Bucket='subscriptions',
+            Key='some_ref/ff0d1111f6636c354cf92c7137f1b5e6'
+        )
 
     def test_get_subscription_by_pattern__should_return_subscriptions(self):
         repo = SubscriptionsRepo(connection_data=self.connection_data)

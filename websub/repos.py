@@ -31,8 +31,11 @@ class Id:
     def __init__(self, id):
         self.id = id
 
-    def to_key(self):
-        return self.id
+    def to_key(self, url=''):
+        key = self.id
+        if url:
+            key += '/%s' % url_to_filename(url)
+        return key
 
 
 class Pattern:
@@ -126,7 +129,7 @@ class SubscriptionsRepo(MinioRepo):
     DEFAULT_BUCKET = 'subscriptions'
 
     def subscribe_by_id(self, id: Id, url, expiration_seconds=None):
-        key = id.to_key()
+        key = id.to_key(url)
         self._subscribe_by_key(key, url, expiration_seconds)
 
     def subscribe_by_pattern(self, pattern: Pattern, url, expiration_seconds=None):
@@ -182,25 +185,6 @@ class SubscriptionsRepo(MinioRepo):
             ContentLength=len(subscription)
         )
 
-    def _search_objects(self, storage_key):
-        found_objects = set()
-
-        listed_objects = self.client.list_objects(
-            Bucket=self.bucket,
-            Prefix=storage_key,
-        )
-        # Warning: this is very dumb way to iterate S3-like objects
-        # works only on small datasets
-        for obj in listed_objects.get('Contents', []):
-            full_url = obj['Key']
-            rel_url = full_url[len(storage_key):]
-            if '/' in rel_url:
-                # returned a file in subdirectory, ignore
-                continue
-            found_objects.add(obj['Key'])
-
-        return found_objects
-
     def _get_subscriptions_by_key(self, key, now):
         subscriptions = set()
 
@@ -215,6 +199,20 @@ class SubscriptionsRepo(MinioRepo):
             subscriptions.add(subscription)
 
         return subscriptions
+
+    def _search_objects(self, storage_key):
+        found_objects = set()
+
+        listed_objects = self.client.list_objects(
+            Bucket=self.bucket,
+            Prefix=storage_key,
+        )
+        # Warning: this is very dumb way to iterate S3-like objects
+        # works only on small datasets
+        for obj in listed_objects.get('Contents', []):
+            found_objects.add(obj['Key'])
+
+        return found_objects
 
 
 class DeliveryOutboxRepo(elasticmqrepo.ElasticMQRepo):
