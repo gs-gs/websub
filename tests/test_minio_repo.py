@@ -28,6 +28,10 @@ class MinioPatternTest(TestCase):
         assert Pattern('aaaa.bbbb.cccc.*').to_key() == "AAAA/BBBB/CCCC/"
         assert Pattern('aaaa.bbbb.cccc.').to_key() == "AAAA/BBBB/CCCC/"
 
+    def test_to_key__with_url__should_add_url_hashed_as_suffix(self):
+        expected = "AAAA/BBBB/CCCC/8710bd9f92a413cbcaa13aa0e00953ba"
+        assert Pattern('aaaa.bbbb.cccc.*').to_key(url='http://callback.com/1') == expected
+
     def test_to_layers__should_return_list_of_layers(self):
         assert Pattern('aaaa.bbbb.cccc.*').to_layers() == [
             'AAAA/',
@@ -39,32 +43,27 @@ class MinioPatternTest(TestCase):
 @freeze_time("2020-05-12 12:00:01")
 class SubscriptionTest(TestCase):
     def setUp(self):
-        body = mock.MagicMock()
-        body.read.return_value = b'{"e": "2020-05-12 14:00:01", "c": "http://callback.com/1"}'
-
-        self.obj = {'Body': body}
+        self.payload = b'{"e": "2020-05-12 14:00:01", "c": "http://callback.com/1"}'
 
     def test_subscription_for_valid_object__should_have_callback_url(self):
-        subscription = Subscription(self.obj, 'some_name', now=datetime.utcnow())
+        subscription = Subscription(self.payload, 'some_name', now=datetime.utcnow())
         assert subscription.is_valid
         assert not subscription.is_expired
         assert subscription.callback_url == 'http://callback.com/1'
 
     @freeze_time("2020-05-12 15:00:01")
     def test_subscription_for_expired_object__should_be_not_valid(self):
-        subscription = Subscription(self.obj, 'some_name', now=datetime.utcnow())
+        subscription = Subscription(self.payload, 'some_name', now=datetime.utcnow())
         assert not subscription.is_valid
         assert subscription.is_expired
 
     def test_subscription__when_missing_callback__should_be_not_valid(self):
-        self.obj['Body'].read.return_value = b'{}'
-        subscription = Subscription(self.obj, 'some_name', now=datetime.utcnow())
+        subscription = Subscription(b'{}', 'some_name', now=datetime.utcnow())
         assert not subscription.is_valid
         assert subscription.error == "data missing required key:'c'"
 
     def test_subscription__when_missing_expiration__should_be_valid(self):
-        self.obj['Body'].read.return_value = b'{"c": "http://callback.com/1"}'
-        subscription = Subscription(self.obj, 'some_name', now=datetime.utcnow())
+        subscription = Subscription(b'{"c": "http://callback.com/1"}', 'some_name', now=datetime.utcnow())
         assert subscription.is_valid
 
 

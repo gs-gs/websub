@@ -39,7 +39,7 @@ class Pattern:
     def __init__(self, predicate):
         self.predicate = predicate
 
-    def to_key(self):
+    def to_key(self, url=''):
         self._validate()
         if self.predicate.endswith('.'):
             self.predicate = self.predicate[:-1]
@@ -48,6 +48,8 @@ class Pattern:
 
         predicate_parts = self.predicate.upper().split('.')
         key = '/'.join([p for p in predicate_parts if p]) + '/'
+        if url:
+            key += url_to_filename(url)
         return key
 
     def _validate(self):
@@ -71,22 +73,20 @@ class Subscription:
     CALLBACK_KEY = 'c'
     EXPIRATION_KEY = 'e'
 
-    def __init__(self, obj, name, now):
-        self.obj = obj
-        self.name = name
+    def __init__(self, payload, key, now: datetime):
+        self.payload = payload
+        self.key = key
         self.now = now
         try:
-            self.data = self._decode()
+            self.data = self._decode(payload)
             self.is_valid = True
         except (InvalidSubscriptionFormat, SubscriptionExpired) as e:
             self.is_valid = False
             self.error = str(e)
 
-    def _decode(self):
-        json_data = None
+    def _decode(self, payload):
         try:
-            json_data = self.obj['Body'].read()
-            data = json.loads(json_data.decode('utf-8'))
+            data = json.loads(payload.decode('utf-8'))
         except UnicodeError as e:
             raise InvalidSubscriptionFormat("data is not UTF-8") from e
         except ValueError as e:
@@ -130,7 +130,7 @@ class SubscriptionsRepo(MinioRepo):
         self._subscribe_by_key(key, url, expiration_seconds)
 
     def subscribe_by_pattern(self, pattern: Pattern, url, expiration_seconds=None):
-        key = pattern.to_key() + url_to_filename(url)
+        key = pattern.to_key(url=url)
         self._subscribe_by_key(key, url, expiration_seconds)
 
     def get_subscriptions_by_id(self, id: Id):
@@ -205,12 +205,13 @@ class SubscriptionsRepo(MinioRepo):
         subscriptions = set()
 
         found_objects = self._search_objects(key)
-        for obj_name in found_objects:
+        for obj_key in found_objects:
             obj = self.client.get_object(
                 Bucket=self.bucket,
-                Key=obj_name,
+                Key=obj_key,
             )
-            subscription = Subscription(obj, obj_name, now)
+            payload = obj['Body'].read()
+            subscription = Subscription(payload, obj_key, now)
             subscriptions.add(subscription)
 
         return subscriptions
