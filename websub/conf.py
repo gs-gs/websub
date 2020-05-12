@@ -7,9 +7,9 @@ class BaseConfig(metaclass=MetaFlaskEnv):
     TESTING = False
     SUBSCRIPTIONS_REPO_CONF = env_s3_config('SUBSCRIPTIONS_REPO')
     SUBSCRIPTIONS_REPO_CLASS = 'websub.repos.SubscriptionsRepo'
-    DELIVERY_OUTBOX_REPO_CLASS = 'intergov.repos.delivery_outbox.DeliveryOutboxRepo'
+    DELIVERY_OUTBOX_REPO_CLASS = 'websub.repos.DeliveryOutboxRepo'
     DELIVERY_OUTBOX_REPO_CONF = env_queue_config('PROC_DELIVERY_OUTBOX_REPO')
-    NOTIFICATIONS_REPO_CLASS = 'intergov.repos.notifications.NotificationsRepo'
+    NOTIFICATIONS_REPO_CLASS = 'websub.repos.NotificationsRepo'
     NOTIFICATIONS_REPO_CONF = env_queue_config('NOTIFICATIONS_REPO_CONF')
 
 

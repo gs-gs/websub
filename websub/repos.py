@@ -5,6 +5,7 @@ from datetime import timedelta, datetime
 from io import BytesIO
 
 import dateutil
+from libtrustbridge.repos import elasticmqrepo
 from libtrustbridge.repos.miniorepo import MinioRepo
 
 logger = logging.getLogger(__name__)
@@ -213,3 +214,14 @@ class SubscriptionsRepo(MinioRepo):
             subscriptions.add(subscription)
 
         return subscriptions
+
+
+class DeliveryOutboxRepo(elasticmqrepo.ElasticMQRepo):
+    def _get_queue_name(self):
+        return 'delivery-outbox'
+
+
+class NotificationOutboxRepo(elasticmqrepo.ElasticMQRepo):
+    def _get_queue_name(self):
+        return 'notifications'
+
