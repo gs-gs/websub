@@ -77,7 +77,7 @@ class Subscription:
         try:
             self.data = self._decode()
             self.is_valid = True
-        except (InvalidSubscriptionFormat, SubscriptionExpired)  as e:
+        except (InvalidSubscriptionFormat, SubscriptionExpired) as e:
             self.is_valid = False
             self.error = str(e)
 
@@ -94,17 +94,20 @@ class Subscription:
 
         try:
             callback = data[self.CALLBACK_KEY]
-            data[self.EXPIRATION_KEY] = dateutil.parser.parse(data[self.EXPIRATION_KEY])
+            expiration = data.get(self.EXPIRATION_KEY)
+            if expiration:
+                data[self.EXPIRATION_KEY] = dateutil.parser.parse(expiration)
+                self.is_expired = data[self.EXPIRATION_KEY] < self.now
+                if self.is_expired:
+                    raise SubscriptionExpired()
         except KeyError as e:
             raise InvalidSubscriptionFormat(f"data missing required key:{str(e)}") from e
         except (TypeError, ValueError) as e:
             raise InvalidSubscriptionFormat(f"expiration invalid format:{str(data[self.EXPIRATION_KEY])}") from e
 
-        self.is_expired = data[self.EXPIRATION_KEY] and data[self.EXPIRATION_KEY] < self.now
-        if self.is_expired:
-            raise SubscriptionExpired()
         return data
 
+    @property
     def callback_url(self):
         return self.data[self.CALLBACK_KEY]
 
@@ -126,11 +129,11 @@ class SubscriptionsRepo(MinioRepo):
         self._subscribe_by_key(key, url, expiration_seconds)
 
     def subscribe_by_pattern(self, pattern: Pattern, url, expiration_seconds=None):
-        key = pattern.to_key()
+        key = pattern.to_key() + url_to_filename(url)
         self._subscribe_by_key(key, url, expiration_seconds)
 
     def get_subscriptions_by_id(self, id: Id):
-        return self._get_subscriptions_by_key(id.to_key())
+        return self._get_subscriptions_by_key(id.to_key(), datetime.utcnow())
 
     def get_subscriptions_by_pattern(self, pattern: Pattern):
         """
@@ -148,10 +151,10 @@ class SubscriptionsRepo(MinioRepo):
         AA.BB.CCCC.EE, and doesn't include AA.BB.CC.GG
         """
         subscriptions = set()
-
+        now = datetime.utcnow()
         layers = pattern.to_layers()
         for storage_key in layers:
-            subscriptions |= self._get_subscriptions_by_key(storage_key)
+            subscriptions |= self._get_subscriptions_by_key(storage_key, now)
 
         return subscriptions
 
@@ -173,7 +176,7 @@ class SubscriptionsRepo(MinioRepo):
         subscription = Subscription.encode_obj(url, expiration)
         self.client.put_object(
             Bucket=self.bucket,
-            Key=key + url_to_filename(url),
+            Key=key,
             Body=BytesIO(subscription),
             ContentLength=len(subscription)
         )
@@ -197,8 +200,7 @@ class SubscriptionsRepo(MinioRepo):
 
         return found_objects
 
-    def _get_subscriptions_by_key(self, key):
-        now = datetime.utcnow()
+    def _get_subscriptions_by_key(self, key, now):
         subscriptions = set()
 
         found_objects = self._search_objects(key)

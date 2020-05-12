@@ -34,5 +34,6 @@ setuptools.setup(
     tests_require=[
         "pytest==5.4.1",
         "pytest-flask==1.0.0",
+        "freezegun==0.3.15",
     ]
 )
