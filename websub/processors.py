@@ -1,16 +1,14 @@
 import logging
 
-from websub.use_cases import DeliverCallbackUseCase, DispatchMessageToSubscribersUseCase
-
 logger = logging.getLogger(__name__)
 
 
-class CallbacksDeliveryProcessor(object):
+class Processor(object):
     """
-    Iterate over the DeliverCallbackUseCase.
+    Iterate over the use case.
     """
-    def __init__(self):
-        self.uc = DeliverCallbackUseCase()
+    def __init__(self, use_case):
+        self.use_case = use_case
 
     def __iter__(self):
         logger.info("Starting the outbound callbacks processor")
@@ -18,29 +16,7 @@ class CallbacksDeliveryProcessor(object):
 
     def __next__(self):
         try:
-            result = self.uc.execute()
-        except Exception as e:
-            logger.exception(e)
-            result = None
-        return result
-
-
-class CallbacksSpreaderProcessor(object):
-    """
-    Convert each incoming message to set of messages containing (websub_url, message)
-    so they may be sent and fail separately
-    """
-
-    def __init__(self,):
-        self.uc = DispatchMessageToSubscribersUseCase()
-
-    def __iter__(self):
-        logger.info("Starting the outbound callbacks processor")
-        return self
-
-    def __next__(self):
-        try:
-            result = self.uc.execute()
+            result = self.use_case.execute()
         except Exception as e:
             logger.exception(e)
             result = None

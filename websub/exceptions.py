@@ -6,7 +6,6 @@ from . import constants
 
 
 class TopicValidationError(ValidationError):
-
     detail = '"{}" attribute is invalid'.format(constants.TOPIC_ATTR_KEY)
 
     @property

@@ -1,16 +1,12 @@
 from unittest import mock
-from websub.processors import CallbacksDeliveryProcessor
+from websub.processors import Processor
 
 
-@mock.patch('websub.processors.DeliverCallbackUseCase', autospec=True)
-def test(DeliverCallbackUseCase, delivery_outbox_repo):
-    processor = CallbacksDeliveryProcessor()
-    # checking proper initialization
-    DeliverCallbackUseCase.assert_called_once_with()
-
+def test_processor():
+    use_case = mock.Mock()
+    processor = Processor(use_case=use_case)
     assert iter(processor) == processor
 
-    use_case = DeliverCallbackUseCase.return_value
     use_case.execute.return_value = False
     assert next(processor) is False
     use_case.execute.return_value = True
