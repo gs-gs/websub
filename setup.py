@@ -17,21 +17,11 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    entry_points={
-        'console_scripts': [
-            'websub=websub.manage:main'
-        ],
-    },
     install_requires=[
-        "Flask==1.1.2",
-        "Flask-Env==2.0.0",
-        "Flask-Negotiate==0.1.0",
-        "Flask-Script==2.0.6",
-        "requests==2.23.0",
-        "inject==4.1.2",
+        "libtrustbridge @ git+https://github.com/trustbridge/libtrustbridge@8acedba8",
     ],
     tests_require=[
         "pytest==5.4.1",
-        "pytest-flask==1.0.0",
+        "freezegun==0.3.15",
     ]
 )

@@ -1,15 +1,11 @@
 from http import HTTPStatus as StatusCode
-from websub.common.errors import (
-    ValidationError,
-    InternalServerError,
-    GenericHTTPError
-)
+
+from libtrustbridge.errors import ValidationError, GenericHTTPError, InternalServerError
 
 from . import constants
 
 
 class TopicValidationError(ValidationError):
-
     detail = '"{}" attribute is invalid'.format(constants.TOPIC_ATTR_KEY)
 
     @property
